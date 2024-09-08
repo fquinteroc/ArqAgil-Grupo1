@@ -11,7 +11,81 @@ pqrs_schema = PQRSchema(many=True)
 informe_schema = InformeSchema()
 informes_schema = InformeSchema(many=True)
 
+class VistaGeneracionInforme(Resource):
+    #Generamos un reporte en función PQR
+    #Debemos guardar en una tabla el número de veces que se consulta, y simular falla cada 5
+    def get(self, cliente_id=None):
+        #Leer de la BD el número de informe generado
+        # nro  = NroInforme()
+        #if (nro mod 5==0): simular la falla
+        #else: continuar con el reporte
+        if cliente_id:
+            pqr = PQR.query.get_or_404(cliente_id)
+            return pqr_schema.dump(pqr), 200
+        else:
+            pqrs = PQR.query.all()
+            return pqrs_schema.dump(pqrs), 200
 
+class VistaInformes(Resource):
+    def get(self, informe_id=None):
+        if informe_id:
+            informe = Informe.query.get_or_404(informe_id)
+            return informe_schema.dump(informe), 200
+        else:
+            informes = Informe.query.all()
+            return informes_schema.dump(informes), 200
+
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('nombre', type=str, required=True)
+        parser.add_argument('descripcion', type=str, required=True)
+        parser.add_argument('fecha_creacion', type=str, required=False)
+        parser.add_argument('hora_creacion', type=str, required=False)
+        parser.add_argument('estado', type=str, required=False)
+
+        args = parser.parse_args()
+
+        nuevo_informe = Informe(
+            nombre=args['nombre'],
+            descripcion=args['descripcion'],
+            fecha_creacion=args.get('fecha_creacion'),
+            hora_creacion=args.get("hora_creacion"),
+            estado=args.get('estado'),
+        )
+        db.session.add(nuevo_informe)
+        db.session.commit()
+        return informe_schema.dump(nuevo_informe), 201
+
+    def put(self, informe_id):
+        informe = Informe.query.get_or_404(informe_id)
+        parser = reqparse.RequestParser()
+        parser.add_argument('nombre', type=str)
+        parser.add_argument('descripcion', type=str)
+        parser.add_argument('fecha_creacion', type=str)
+        parser.add_argument('hora_creacion', type=str)
+        parser.add_argument('estado', type=str)
+        args = parser.parse_args()
+
+        if args['nombre']:
+            informe.nombre = args['nombre']
+        if args['descripcion']:
+            informe.descripcion = args['descripcion']
+        if args['fecha_creacion']:
+            informe.fecha_creacion = args['fecha_creacion']
+        if args['hora_creacion']:
+            informe.hora_creacion = args['hora_creacion']
+        if args['estado']:
+            informe.estado = args['estado']
+
+        db.session.commit()
+        return cliente_schema.dump(informe), 200
+
+    def delete(self, informe_id):
+        informe = Informe.query.get_or_404(informe_id)
+        db.session.delete(informe)
+        db.session.commit()
+        return '', 204
+          
 class VistaCliente(Resource):
     def get(self, cliente_id=None):
         if cliente_id:

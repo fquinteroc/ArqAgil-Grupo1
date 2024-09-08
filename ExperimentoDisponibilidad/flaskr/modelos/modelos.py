@@ -44,11 +44,12 @@ class Informe(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nombre = db.Column(db.String(100), nullable=False)
     descripcion = db.Column(db.String(255), nullable=True)
-    fecha_creacion = db.Column(db.DateTime, nullable=False)
+    fecha_creacion = db.Column(db.String(10), nullable=False)
+    hora_creacion = db.Column(db.String(10), nullable=False)
     estado = db.Column(db.String(50), default='Generado')
 
-    cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'), nullable=True)
-    pqr_id = db.Column(db.Integer, db.ForeignKey('pqrs.id'), nullable=True)
+    #cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'), nullable=True)
+    #pqr_id = db.Column(db.Integer, db.ForeignKey('pqrs.id'), nullable=True)
 
 class Monitoreo(db.Model):
     __tablename__ = 'monitoreo'

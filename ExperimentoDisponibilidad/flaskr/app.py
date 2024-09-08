@@ -2,7 +2,7 @@ from flaskr import create_app
 from .modelos import db, Cliente
 from .modelos import ClienteSchema
 from flask_restful import Api
-from .vistas import VistaCliente, VistaProducto, VistaPQR
+from .vistas import VistaCliente, VistaProducto, VistaPQR, VistaInformes
 
 app = create_app('default')
 app_context = app.app_context()
@@ -27,3 +27,4 @@ api = Api(app)
 api.add_resource(VistaCliente, '/clientes')
 api.add_resource(VistaProducto, '/productos')
 api.add_resource(VistaPQR, '/pqrs')
+api.add_resource(VistaInformes, '/informes')
