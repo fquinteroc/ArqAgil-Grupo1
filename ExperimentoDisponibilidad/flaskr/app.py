@@ -1,4 +1,5 @@
 from flaskr import create_app
+from flaskr.vistas.vistas import VistaNotificacionFalla
 from .modelos import db, Cliente
 from .modelos import ClienteSchema
 from flask_restful import Api
@@ -28,3 +29,4 @@ api.add_resource(VistaCliente, '/clientes')
 api.add_resource(VistaProducto, '/productos')
 api.add_resource(VistaPQR, '/pqrs')
 api.add_resource(VistaInformes, '/informes')
+api.add_resource(VistaNotificacionFalla,'/notificacionfalla')

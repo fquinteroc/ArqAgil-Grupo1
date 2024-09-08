@@ -65,7 +65,8 @@ class NotificacionFalla(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     servicio = db.Column(db.String(100), nullable=False)
     mensaje = db.Column(db.String(500), nullable=False)
-    fecha_notificacion = db.Column(db.DateTime, nullable=False)
+    fecha_notificacion = db.Column(db.String(10), nullable=False)
+    hora_notificacion = db.Column(db.String(10), nullable=False)
     estado = db.Column(db.String(50), default='Pendiente')
 
 class LogBaseDatos(db.Model):

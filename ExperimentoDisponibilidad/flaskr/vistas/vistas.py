@@ -11,20 +11,38 @@ pqrs_schema = PQRSchema(many=True)
 informe_schema = InformeSchema()
 informes_schema = InformeSchema(many=True)
 
-class VistaGeneracionInforme(Resource):
-    #Generamos un reporte en función PQR
-    #Debemos guardar en una tabla el número de veces que se consulta, y simular falla cada 5
-    def get(self, cliente_id=None):
-        #Leer de la BD el número de informe generado
-        # nro  = NroInforme()
-        #if (nro mod 5==0): simular la falla
-        #else: continuar con el reporte
-        if cliente_id:
-            pqr = PQR.query.get_or_404(cliente_id)
-            return pqr_schema.dump(pqr), 200
+notificacion_schema =NotificacionFallaSchema()
+notificaciones_schema =NotificacionFallaSchema(many=True)
+
+class VistaNotificacionFalla(Resource):
+    def get(self, notificacion_id=None):
+        if notificacion_id:
+            notificacion = NotificacionFalla.query.get_or_404(notificacion_id)
+            return notificacion_schema.dump(notificacion), 200
         else:
-            pqrs = PQR.query.all()
-            return pqrs_schema.dump(pqrs), 200
+            notificaciones = NotificacionFalla.query.all()
+            return notificaciones_schema.dump(notificaciones), 200
+        
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('servicio', type=str, required=True)
+        parser.add_argument('mensaje', type=str, required=True)
+        parser.add_argument('fecha_notificacion', type=str, required=False)
+        parser.add_argument('hora_notificacion', type=str, required=False)
+        parser.add_argument('estado', type=str, required=False)
+
+        args = parser.parse_args()
+
+        nueva_notificacion = NotificacionFalla(
+            servicio=args['servicio'],
+            mensaje=args['mensaje'],
+            fecha_notificacion=args.get('fecha_notificacion'),
+            hora_notificacion=args.get("hora_notificacion"),
+            estado=args.get('estado'),
+        )
+        db.session.add(nueva_notificacion)
+        db.session.commit()
+        return notificacion_schema.dump(nueva_notificacion), 201
 
 class VistaInformes(Resource):
     def get(self, informe_id=None):

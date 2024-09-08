@@ -13,23 +13,27 @@ app_context.push()
 api = Api(app)
 fake = Faker()
 contador_invocaciones = 0
+contador_informes=0
 
 class VistaInforme(Resource):
     def post(self):
+        global contador_informes
+        contador_informes = contador_informes +1
         #Traer el último id generado y validar que sea múltiplo de 5, para generar error en el reporte
         url = 'http://127.0.0.1:5000/informes'
         response = requests.get(url)
         estado ="OK"
         caida=False
-        data1 = response.json() 
-        if len(data1)>0:
-            id = data1[-1].get("id","no encontrado")
-            print("Id:",id)
-            if((id+1)%5 == 0): estado="Error" #Se utiliza para indicar que hubo error en el reporte
-            if((id+1)%10 == 0):
-                caida=True #Se utiliza para simular la caida cada 10 solicitudes
-                estado ="caida"
-
+        #data1 = response.json() 
+        #print("longitud data1:",len(data1))
+        #if data1.status_code != 404: #Validamos que no este vacía
+        #    if len(data1)>0:
+        #id = data1[-1].get("id","no encontrado")
+        #print("Id:",id)
+        if(contador_informes%5 == 0): estado="Error" #Se utiliza para indicar que hubo error en el reporte
+        if(contador_informes%10 == 0):
+            caida=True #Se utiliza para simular la caida cada 10 solicitudes
+            estado ="caida"
         ahora = datetime.now()
         hora_actual = ahora.strftime("%H:%M:%S")
         # Los datos que enviarás en la petición POST
