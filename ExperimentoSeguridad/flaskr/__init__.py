@@ -5,4 +5,8 @@ def create_app(config_name):
     app.config['SQLALCHEMY_DATABASE_URI']='sqlite:///generacion_informes.db'
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS']=False
     
+    app.config['JWT_SECRET_KEY']='grupo_5'
+
+    app.config['PROPAGATE_EXCEPTIONS']=True
+
     return app

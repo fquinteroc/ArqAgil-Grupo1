@@ -12,6 +12,7 @@ class Cliente(db.Model):
     email = db.Column(db.String(100), unique=True, nullable=False)
     telefono = db.Column(db.String(20), nullable=True)
     direccion = db.Column(db.String(200), nullable=True)
+    password = db.Column(db.String(200), nullable=False)
 
     pqrs = db.relationship('PQR', backref='cliente', lazy=True)
 

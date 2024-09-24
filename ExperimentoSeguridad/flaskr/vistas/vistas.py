@@ -1,6 +1,9 @@
 from flask_restful import Resource, reqparse
 from ..modelos import db, Cliente, Producto, PQR, Informe, Monitoreo, NotificacionFalla, LogBaseDatos, \
                     ClienteSchema, ProductoSchema, PQRSchema, InformeSchema, MonitoreoSchema, NotificacionFallaSchema, LogBaseDatosSchema
+from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
+from werkzeug.security import generate_password_hash, check_password_hash
+
 
 cliente_schema = ClienteSchema()
 clientes_schema = ClienteSchema(many=True)
@@ -10,11 +13,50 @@ pqr_schema = PQRSchema()
 pqrs_schema = PQRSchema(many=True)
 informe_schema = InformeSchema()
 informes_schema = InformeSchema(many=True)
+notificacion_schema = NotificacionFallaSchema()
+notificaciones_schema = NotificacionFallaSchema(many=True)
 
-notificacion_schema =NotificacionFallaSchema()
-notificaciones_schema =NotificacionFallaSchema(many=True)
+class VistaSignUp(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('nombre', type=str, required=True)
+        parser.add_argument('email', type=str, required=True)
+        parser.add_argument('password', type=str, required=True)
+        args = parser.parse_args()
+
+        # Verificar si el email ya existe
+        if Cliente.query.filter_by(email=args['email']).first():
+            return {"message": "El usuario con ese email ya existe"}, 400
+
+        nuevo_cliente = Cliente(
+            nombre=args['nombre'],
+            email=args['email'],
+            password=generate_password_hash(args['password'])
+        )
+        db.session.add(nuevo_cliente)
+        db.session.commit()
+        return cliente_schema.dump(nuevo_cliente), 201
+
+
+class VistaLogIn(Resource):
+    def post(self):
+        parser = reqparse.RequestParser()
+        parser.add_argument('email', type=str, required=True)
+        parser.add_argument('password', type=str, required=True)
+        args = parser.parse_args()
+
+        cliente = Cliente.query.filter_by(email=args['email']).first()
+
+        if not cliente or not check_password_hash(cliente.password, args['password']):
+            return {"message": "Credenciales incorrectas"}, 401
+
+        # Crear un token de acceso
+        access_token = create_access_token(identity=cliente.id)
+        return {"access_token": access_token}, 200
+
 
 class VistaNotificacionFalla(Resource):
+    @jwt_required()
     def get(self, notificacion_id=None):
         if notificacion_id:
             notificacion = NotificacionFalla.query.get_or_404(notificacion_id)
@@ -23,6 +65,7 @@ class VistaNotificacionFalla(Resource):
             notificaciones = NotificacionFalla.query.all()
             return notificaciones_schema.dump(notificaciones), 200
         
+    @jwt_required()
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('servicio', type=str, required=True)
@@ -44,7 +87,9 @@ class VistaNotificacionFalla(Resource):
         db.session.commit()
         return notificacion_schema.dump(nueva_notificacion), 201
 
+
 class VistaInformes(Resource):
+    @jwt_required()
     def get(self, informe_id=None):
         if informe_id:
             informe = Informe.query.get_or_404(informe_id)
@@ -53,6 +98,7 @@ class VistaInformes(Resource):
             informes = Informe.query.all()
             return informes_schema.dump(informes), 200
 
+    @jwt_required()
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('nombre', type=str, required=True)
@@ -74,6 +120,7 @@ class VistaInformes(Resource):
         db.session.commit()
         return informe_schema.dump(nuevo_informe), 201
 
+    @jwt_required()
     def put(self, informe_id):
         informe = Informe.query.get_or_404(informe_id)
         parser = reqparse.RequestParser()
@@ -96,15 +143,18 @@ class VistaInformes(Resource):
             informe.estado = args['estado']
 
         db.session.commit()
-        return cliente_schema.dump(informe), 200
+        return informe_schema.dump(informe), 200
 
+    @jwt_required()
     def delete(self, informe_id):
         informe = Informe.query.get_or_404(informe_id)
         db.session.delete(informe)
         db.session.commit()
         return '', 204
-          
+
+
 class VistaCliente(Resource):
+    @jwt_required()
     def get(self, cliente_id=None):
         if cliente_id:
             cliente = Cliente.query.get_or_404(cliente_id)
@@ -113,6 +163,7 @@ class VistaCliente(Resource):
             clientes = Cliente.query.all()
             return clientes_schema.dump(clientes), 200
 
+    @jwt_required()
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('nombre', type=str, required=True)
@@ -131,6 +182,7 @@ class VistaCliente(Resource):
         db.session.commit()
         return cliente_schema.dump(nuevo_cliente), 201
 
+    @jwt_required()
     def put(self, cliente_id):
         cliente = Cliente.query.get_or_404(cliente_id)
         parser = reqparse.RequestParser()
@@ -152,6 +204,7 @@ class VistaCliente(Resource):
         db.session.commit()
         return cliente_schema.dump(cliente), 200
 
+    @jwt_required()
     def delete(self, cliente_id):
         cliente = Cliente.query.get_or_404(cliente_id)
         db.session.delete(cliente)
@@ -160,6 +213,7 @@ class VistaCliente(Resource):
 
 
 class VistaProducto(Resource):
+    @jwt_required()
     def get(self, producto_id=None):
         if producto_id:
             producto = Producto.query.get_or_404(producto_id)
@@ -168,6 +222,7 @@ class VistaProducto(Resource):
             productos = Producto.query.all()
             return productos_schema.dump(productos), 200
 
+    @jwt_required()
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('nombre', type=str, required=True)
@@ -182,6 +237,7 @@ class VistaProducto(Resource):
         db.session.commit()
         return producto_schema.dump(nuevo_producto), 201
 
+    @jwt_required()
     def put(self, producto_id):
         producto = Producto.query.get_or_404(producto_id)
         parser = reqparse.RequestParser()
@@ -197,6 +253,7 @@ class VistaProducto(Resource):
         db.session.commit()
         return producto_schema.dump(producto), 200
 
+    @jwt_required()
     def delete(self, producto_id):
         producto = Producto.query.get_or_404(producto_id)
         db.session.delete(producto)
@@ -205,6 +262,7 @@ class VistaProducto(Resource):
 
 
 class VistaPQR(Resource):
+    @jwt_required()
     def get(self, pqr_id=None):
         if pqr_id:
             pqr = PQR.query.get_or_404(pqr_id)
@@ -213,6 +271,7 @@ class VistaPQR(Resource):
             pqrs = PQR.query.all()
             return pqrs_schema.dump(pqrs), 200
 
+    @jwt_required()
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('fecha', type=str, required=True)
@@ -233,6 +292,7 @@ class VistaPQR(Resource):
         db.session.commit()
         return pqr_schema.dump(nueva_pqr), 201
 
+    @jwt_required()
     def put(self, pqr_id):
         pqr = PQR.query.get_or_404(pqr_id)
         parser = reqparse.RequestParser()
@@ -251,6 +311,7 @@ class VistaPQR(Resource):
         db.session.commit()
         return pqr_schema.dump(pqr), 200
 
+    @jwt_required()
     def delete(self, pqr_id):
         pqr = PQR.query.get_or_404(pqr_id)
         db.session.delete(pqr)
