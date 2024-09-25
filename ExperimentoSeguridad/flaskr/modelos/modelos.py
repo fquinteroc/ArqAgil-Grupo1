@@ -49,9 +49,6 @@ class Informe(db.Model):
     hora_creacion = db.Column(db.String(10), nullable=False)
     estado = db.Column(db.String(50), default='Generado')
 
-    #cliente_id = db.Column(db.Integer, db.ForeignKey('clientes.id'), nullable=True)
-    #pqr_id = db.Column(db.Integer, db.ForeignKey('pqrs.id'), nullable=True)
-
 class Monitoreo(db.Model):
     __tablename__ = 'monitoreo'
     
@@ -60,14 +57,14 @@ class Monitoreo(db.Model):
     estado = db.Column(db.String(50), nullable=False)
     fecha_verificacion = db.Column(db.DateTime, nullable=False)
 
-class NotificacionFalla(db.Model):
-    __tablename__ = 'notificaciones_fallas'
+class Anomalia(db.Model):
+    __tablename__ = 'anomalia'
     
     id = db.Column(db.Integer, primary_key=True)
     servicio = db.Column(db.String(100), nullable=False)
     mensaje = db.Column(db.String(500), nullable=False)
-    fecha_notificacion = db.Column(db.String(10), nullable=False)
-    hora_notificacion = db.Column(db.String(10), nullable=False)
+    fecha = db.Column(db.String(10), nullable=False)
+    hora = db.Column(db.String(10), nullable=False)
     estado = db.Column(db.String(50), default='Pendiente')
 
 class LogBaseDatos(db.Model):
@@ -118,9 +115,9 @@ class MonitoreoSchema(SQLAlchemyAutoSchema):
         include_relationships = True
         load_instance = True
 
-class NotificacionFallaSchema(SQLAlchemyAutoSchema):
+class AnomaliaSchema(SQLAlchemyAutoSchema):
     class Meta:
-        model = NotificacionFalla
+        model = Anomalia
         include_relationships = True
         load_instance = True
 
