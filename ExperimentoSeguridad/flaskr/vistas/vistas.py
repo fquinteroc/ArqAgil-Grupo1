@@ -1,6 +1,6 @@
 from flask_restful import Resource, reqparse
-from ..modelos import db, Cliente, Producto, PQR, Informe, Monitoreo, NotificacionFalla, LogBaseDatos, \
-                    ClienteSchema, ProductoSchema, PQRSchema, InformeSchema, MonitoreoSchema, NotificacionFallaSchema, LogBaseDatosSchema
+from ..modelos import db, Cliente, Producto, PQR, Informe, Anomalia, \
+                    ClienteSchema, ProductoSchema, PQRSchema, InformeSchema,AnomaliaSchema
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -13,8 +13,8 @@ pqr_schema = PQRSchema()
 pqrs_schema = PQRSchema(many=True)
 informe_schema = InformeSchema()
 informes_schema = InformeSchema(many=True)
-notificacion_schema = NotificacionFallaSchema()
-notificaciones_schema = NotificacionFallaSchema(many=True)
+anomalia_schema =   AnomaliaSchema()
+anomalias_schema = AnomaliaSchema(many=True)
 
 class VistaSignUp(Resource):
     def post(self):
@@ -55,41 +55,41 @@ class VistaLogIn(Resource):
         return {"access_token": access_token}, 200
 
 
-class VistaNotificacionFalla(Resource):
-    @jwt_required()
-    def get(self, notificacion_id=None):
-        if notificacion_id:
-            notificacion = NotificacionFalla.query.get_or_404(notificacion_id)
-            return notificacion_schema.dump(notificacion), 200
+class VistaAnomalia(Resource):
+    #@jwt_required()
+    def get(self, anomalia_id=None):
+        if anomalia_id:
+            anomalia = Anomalia.query.get_or_404(anomalia_id)
+            return anomalia_schema.dump(anomalia), 200
         else:
-            notificaciones = NotificacionFalla.query.all()
-            return notificaciones_schema.dump(notificaciones), 200
+            anomalias = Anomalia.query.all()
+            return anomalias_schema.dump(anomalias), 200
         
-    @jwt_required()
+    #@jwt_required()
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('servicio', type=str, required=True)
         parser.add_argument('mensaje', type=str, required=True)
-        parser.add_argument('fecha_notificacion', type=str, required=False)
-        parser.add_argument('hora_notificacion', type=str, required=False)
+        parser.add_argument('fecha', type=str, required=False)
+        parser.add_argument('hora', type=str, required=False)
         parser.add_argument('estado', type=str, required=False)
 
         args = parser.parse_args()
 
-        nueva_notificacion = NotificacionFalla(
+        nueva_anomalia = Anomalia(
             servicio=args['servicio'],
             mensaje=args['mensaje'],
-            fecha_notificacion=args.get('fecha_notificacion'),
-            hora_notificacion=args.get("hora_notificacion"),
+            fecha=args.get('fecha'),
+            hora=args.get("hora"),
             estado=args.get('estado'),
         )
-        db.session.add(nueva_notificacion)
+        db.session.add(nueva_anomalia)
         db.session.commit()
-        return notificacion_schema.dump(nueva_notificacion), 201
+        return anomalia_schema.dump(nueva_anomalia), 201
 
 
 class VistaInformes(Resource):
-    @jwt_required()
+    #@jwt_required()
     def get(self, informe_id=None):
         if informe_id:
             informe = Informe.query.get_or_404(informe_id)
@@ -98,7 +98,7 @@ class VistaInformes(Resource):
             informes = Informe.query.all()
             return informes_schema.dump(informes), 200
 
-    @jwt_required()
+    #@jwt_required()
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('nombre', type=str, required=True)
@@ -120,7 +120,7 @@ class VistaInformes(Resource):
         db.session.commit()
         return informe_schema.dump(nuevo_informe), 201
 
-    @jwt_required()
+    #@jwt_required()
     def put(self, informe_id):
         informe = Informe.query.get_or_404(informe_id)
         parser = reqparse.RequestParser()
@@ -145,7 +145,7 @@ class VistaInformes(Resource):
         db.session.commit()
         return informe_schema.dump(informe), 200
 
-    @jwt_required()
+    #@jwt_required()
     def delete(self, informe_id):
         informe = Informe.query.get_or_404(informe_id)
         db.session.delete(informe)
