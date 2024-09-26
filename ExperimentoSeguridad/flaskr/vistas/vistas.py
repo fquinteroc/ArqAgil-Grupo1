@@ -1,3 +1,5 @@
+import random
+
 from flask_restful import Resource, reqparse
 from ..modelos import db, Cliente, Producto, PQR, Informe, Anomalia, \
                     ClienteSchema, ProductoSchema, PQRSchema, InformeSchema,AnomaliaSchema
@@ -317,3 +319,12 @@ class VistaPQR(Resource):
         db.session.delete(pqr)
         db.session.commit()
         return '', 204
+
+class VistaCertificador(Resource):
+    #@jwt_required()
+    def post(self):
+
+        if bool(random.getrandbits(1)):
+            return True, 200
+        else:
+            return False, 401

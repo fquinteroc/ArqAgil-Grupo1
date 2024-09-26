@@ -1,6 +1,6 @@
 from flaskr import create_app
 from flaskr.modelos import db, Cliente, ClienteSchema
-from flaskr.vistas import VistaCliente, VistaProducto, VistaPQR, VistaInformes, VistaAnomalia, VistaSignUp, VistaLogIn
+from flaskr.vistas import VistaCliente, VistaProducto, VistaPQR, VistaInformes, VistaAnomalia, VistaSignUp, VistaLogIn, VistaCertificador
 from flask_restful import Api
 from flask_jwt_extended import JWTManager
 
@@ -19,6 +19,7 @@ api.add_resource(VistaInformes, '/informes')
 api.add_resource(VistaAnomalia, '/anomalias')
 api.add_resource(VistaSignUp, '/signup')  # Vista de registro
 api.add_resource(VistaLogIn, '/login')    # Vista de inicio de sesión
+api.add_resource(VistaCertificador, '/certificador')
 
 jwt = JWTManager(app)
 
