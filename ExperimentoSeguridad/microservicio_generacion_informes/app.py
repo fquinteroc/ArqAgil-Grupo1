@@ -12,20 +12,24 @@ app_context.push()
 
 api = Api(app)
 fake = Faker()
-contador_invocaciones = 0
-contador_informes=0
 
 class VistaReporteFacturacion(Resource):
     def post(self):
-        global contador_informes
-        contador_informes = contador_informes +1
+
         #Traer el último id generado y validar que sea múltiplo de 5, para generar error en el reporte
         url = 'http://127.0.0.1:5000/informes'
-        estado ="OK"
-        anomalia=False
-        if(contador_informes%10 == 0):
-            anomalia=True #Se utiliza para simular una anomalía en el comportamiento del usuario cada 10 solicitudes
-            estado ="Anomalía"
+        estado = "OK"
+        anomalia = False
+
+        urlcertificador = 'http://127.0.0.1:5000/certificador'
+
+        # Realiza la petición POST
+        response = requests.post(urlcertificador, json={})
+
+        if response.status_code == 401:
+            anomalia = True  # Se utiliza para simular una anomalía en el comportamiento del usuario cada 10 solicitudes
+            estado = "Anomalía"
+
         ahora = datetime.now()
         hora_actual = ahora.strftime("%H:%M:%S")
         # Los datos que enviarás en la petición POST
