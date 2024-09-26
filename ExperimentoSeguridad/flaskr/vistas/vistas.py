@@ -342,7 +342,8 @@ class VistaCertificador(Resource):
     #@jwt_required()
     def post(self):
 
-        if bool(random.getrandbits(1)):
+    #Función que determina que es 10 veces más probable obtener un True que un False
+        if random.choices([True, False], weights=(10, 1), k=1)[0]:
             return True, 200
         else:
             nueva_anomalia = Anomalia(
