@@ -27,7 +27,7 @@ class VistaReporteFacturacion(Resource):
         response = requests.post(urlcertificador, json={})
 
         if response.status_code == 401:
-            anomalia = True  # Se utiliza para simular una anomalía en el comportamiento del usuario cada 10 solicitudes
+            anomalia = True
             estado = "Anomalía"
 
         ahora = datetime.now()
