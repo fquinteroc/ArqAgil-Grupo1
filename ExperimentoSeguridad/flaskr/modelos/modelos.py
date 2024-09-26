@@ -1,6 +1,7 @@
 from marshmallow_sqlalchemy import SQLAlchemyAutoSchema
 from marshmallow_sqlalchemy.fields import Nested
 from flask_sqlalchemy import SQLAlchemy
+from datetime import datetime
 
 db = SQLAlchemy()
 
@@ -76,6 +77,24 @@ class LogBaseDatos(db.Model):
     fecha = db.Column(db.DateTime, nullable=False)
     descripcion = db.Column(db.String(255), nullable=True)
 
+class HistorialValidacion(db.Model):
+    __tablename__ = 'historial_validacion'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    token = db.Column(db.String(500), nullable=False)
+    resultado = db.Column(db.String(50), nullable=False)
+    identidad = db.Column(db.String(100), nullable=True)
+    fecha_validacion = db.Column(db.DateTime, default=datetime.utcnow)
+    descripcion = db.Column(db.String(255), nullable=True)
+
+class HistorialLogin(db.Model):
+    __tablename__ = 'historial_login'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    email = db.Column(db.String(100), nullable=False)
+    resultado = db.Column(db.String(50), nullable=False)
+    fecha = db.Column(db.DateTime, default=datetime.utcnow)
+    descripcion = db.Column(db.String(255), nullable=True)
 
 # ESQUEMAS DE SERIALIZACIÓN
 class ClienteSchema(SQLAlchemyAutoSchema):

@@ -2,9 +2,10 @@ import random
 
 from flask_restful import Resource, reqparse
 from ..modelos import db, Cliente, Producto, PQR, Informe, Anomalia, \
-                    ClienteSchema, ProductoSchema, PQRSchema, InformeSchema,AnomaliaSchema
+                    ClienteSchema, ProductoSchema, PQRSchema, InformeSchema,AnomaliaSchema, HistorialValidacion, HistorialLogin
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
+from flask import request
 
 
 cliente_schema = ClienteSchema()
@@ -50,10 +51,26 @@ class VistaLogIn(Resource):
         cliente = Cliente.query.filter_by(email=args['email']).first()
 
         if not cliente or not check_password_hash(cliente.password, args['password']):
+            nuevo_registro = HistorialLogin(
+                email=args['email'],
+                resultado="Fallo",
+                descripcion="Credenciales incorrectas"
+            )
+            db.session.add(nuevo_registro)
+            db.session.commit()
+
             return {"message": "Credenciales incorrectas"}, 401
 
-        # Crear un token de acceso
         access_token = create_access_token(identity=cliente.id)
+
+        nuevo_registro = HistorialLogin(
+            email=args['email'],
+            resultado="Éxito",
+            descripcion="Inicio de sesión exitoso"
+        )
+        db.session.add(nuevo_registro)
+        db.session.commit()
+
         return {"access_token": access_token}, 200
 
 
@@ -328,3 +345,26 @@ class VistaCertificador(Resource):
             return True, 200
         else:
             return False, 401
+
+class VistaTokens(Resource):
+    def post(self):
+        data = request.get_json()
+
+        token = data.get('token')
+        resultado = data.get('resultado')
+        identidad = data.get('identidad')
+        descripcion = data.get('descripcion', '')
+
+        if not token or not resultado:
+            return {"message": "Faltan datos necesarios para guardar el historial."}, 400
+
+        nuevo_registro = HistorialValidacion(
+            token=token,
+            resultado=resultado,
+            identidad=identidad,
+            descripcion=descripcion
+        )
+        db.session.add(nuevo_registro)
+        db.session.commit()
+
+        return {"message": "Historial guardado exitosamente."}, 201
