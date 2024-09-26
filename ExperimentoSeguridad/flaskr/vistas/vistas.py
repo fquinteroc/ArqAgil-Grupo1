@@ -108,7 +108,7 @@ class VistaAnomalia(Resource):
 
 
 class VistaInformes(Resource):
-    #@jwt_required()
+    @jwt_required()
     def get(self, informe_id=None):
         if informe_id:
             informe = Informe.query.get_or_404(informe_id)
@@ -117,7 +117,7 @@ class VistaInformes(Resource):
             informes = Informe.query.all()
             return informes_schema.dump(informes), 200
 
-    #@jwt_required()
+    @jwt_required()
     def post(self):
         parser = reqparse.RequestParser()
         parser.add_argument('nombre', type=str, required=True)
