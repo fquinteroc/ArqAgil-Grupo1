@@ -1,4 +1,5 @@
 import random
+from datetime import datetime
 
 from flask_restful import Resource, reqparse
 from ..modelos import db, Cliente, Producto, PQR, Informe, Anomalia, \
@@ -344,6 +345,15 @@ class VistaCertificador(Resource):
         if bool(random.getrandbits(1)):
             return True, 200
         else:
+            nueva_anomalia = Anomalia(
+                servicio= "Microservicio certificador",
+                mensaje= str("Registro en log del microservicio certificador"),
+                fecha= "25/09/2024",
+                hora= datetime.now().strftime("%H:%M:%S"),
+                estado= "Posible intruso"
+            )
+            db.session.add(nueva_anomalia)
+            db.session.commit()
             return False, 401
 
 class VistaTokens(Resource):
