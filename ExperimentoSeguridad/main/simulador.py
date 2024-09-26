@@ -3,10 +3,27 @@ import time
 import requests
 from flask import Flask
 from datetime import datetime
+from faker import Faker 
+from flaskr.modelos import db, Usuario
 
 app = Flask(__name__)
 
+
 def simulador_servicio_externo():
+    fake = Faker()  # Inicializamos Faker
+    for _ in range(5):
+        # Generamos un usuario con datos aleatorios
+        data = {
+            'nombre': fake.name() ,
+            'email': fake.email(),
+            'telefono': fake.phone_number(),
+            'direccion': fake.address(),
+            'password': fake.password(length=10)
+        }
+        
+        # Realiza la petición POST
+        response = requests.post("http://127.0.0.1:5000/signup", json=data)
+    print("5 usuarios aleatorios generados en la base de datos")
     while True:
         try:
             # Llamamos al microservicio de generar informe, para generar el reporte de facturación
