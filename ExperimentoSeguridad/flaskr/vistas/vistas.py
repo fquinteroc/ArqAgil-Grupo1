@@ -2,7 +2,7 @@ import random
 
 from flask_restful import Resource, reqparse
 from ..modelos import db, Cliente, Producto, PQR, Informe, Anomalia, \
-                    ClienteSchema, ProductoSchema, PQRSchema, InformeSchema,AnomaliaSchema, HistorialValidacion, HistorialLogin
+                    ClienteSchema, ProductoSchema, PQRSchema, InformeSchema,AnomaliaSchema, HistorialValidacion, HistorialLogin,HistorialCertificacion,HistorialCerticacionSchema
 from flask_jwt_extended import jwt_required, create_access_token, get_jwt_identity
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask import request
@@ -18,6 +18,7 @@ informe_schema = InformeSchema()
 informes_schema = InformeSchema(many=True)
 anomalia_schema =   AnomaliaSchema()
 anomalias_schema = AnomaliaSchema(many=True)
+certificacion_schema = HistorialCerticacionSchema()
 
 class VistaSignUp(Resource):
     def post(self):
@@ -340,11 +341,24 @@ class VistaPQR(Resource):
 class VistaCertificador(Resource):
     #@jwt_required()
     def post(self):
-
-        if bool(random.getrandbits(1)):
-            return True, 200
-        else:
-            return False, 401
+        data = request.get_json()
+        usuario = data.get('usuario')
+        componente = data.get('componente')
+        resultado = data.get('resultado')
+        fecha = data.get('fecha')
+        hora = data.get('hora')
+        estado = data.get('estado')
+        nuevo = HistorialCertificacion(
+            usuario = usuario,
+            componente = componente,
+            resultado = resultado,
+            fecha = fecha,
+            hora = hora,
+            estado = estado
+        )
+        db.session.add(nuevo)
+        db.session.commit()
+        return certificacion_schema.dump(nuevo), 201
 
 class VistaTokens(Resource):
     def post(self):

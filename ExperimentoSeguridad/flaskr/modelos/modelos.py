@@ -96,6 +96,17 @@ class HistorialLogin(db.Model):
     fecha = db.Column(db.DateTime, default=datetime.utcnow)
     descripcion = db.Column(db.String(255), nullable=True)
 
+class HistorialCertificacion(db.Model):
+    __tablename__ = 'historial_certificacion'
+    
+    id = db.Column(db.Integer, primary_key=True)
+    usuario = db.Column(db.String(100), nullable=False)
+    componente = db.Column(db.String(100), nullable=False)
+    resultado = db.Column(db.String(100), nullable=False)
+    fecha= db.Column(db.String(10), nullable=False)
+    hora = db.Column(db.String(10), nullable=False)
+    estado = db.Column(db.String(100), nullable=True)
+
 # ESQUEMAS DE SERIALIZACIÓN
 class ClienteSchema(SQLAlchemyAutoSchema):
     class Meta:
@@ -143,5 +154,10 @@ class AnomaliaSchema(SQLAlchemyAutoSchema):
 class LogBaseDatosSchema(SQLAlchemyAutoSchema):
     class Meta:
         model = LogBaseDatos
+        include_relationships = True
+        load_instance = True
+class HistorialCerticacionSchema(SQLAlchemyAutoSchema):
+    class Meta:
+        model = HistorialCertificacion
         include_relationships = True
         load_instance = True
