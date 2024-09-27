@@ -79,7 +79,7 @@ flask run -p 5003
 ```bash
 cd ExperimentoSeguridad/microservicio_detector_intruso/
 ```
-10.2 Ejecuta este microservicio en el puerto 5003:
+10.2 Ejecuta este microservicio en el puerto 5004:
 ```bash
 flask run -p 5004
 ```
