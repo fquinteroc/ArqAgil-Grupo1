@@ -1,87 +1,22 @@
-# Experimentación 1 - Disponibilidad
-Este proyecto consiste en la ejecución de varios microservicios utilizando Flask. Cada microservicio tiene su propia funcionalidad y se ejecuta en diferentes puertos. A continuación se detallan los pasos para configurar y ejecutar los microservicios.
+# Repositorio de Experimentación
 
-## Pasos de instalación
-1. Clona el repositorio en tu máquina local con el siguiente comando:
+Este repositorio contiene dos conjuntos de experimentos, uno enfocado en **Disponibilidad** y otro en **Seguridad**. Cada conjunto de experimentos se encuentra en su respectiva carpeta. A continuación se detallan las carpetas disponibles:
 
-```bash
-git clone https://github.com/fquinteroc/ArqAgil-Grupo5.git
-```
+## Estructura del Repositorio
 
-2. Ve al directorio del proyecto:
-```bash
-cd Grupo5-Arquitectura
-```
+- **/disponibilidad**: Contiene experimentos relacionados arquitectura de software en microservicios enfocados en disponibilidad.
+- **/seguridad**: Contiene experimentos relacionados con arquitectura de software en microservicios enfocados en seguridad.
 
-4. Si no tienes `virtualenv` instalado, puedes hacerlo ejecutando:
-```bash
-py -m pip install --user virtualenv
-```
+## Instrucciones
 
-5. Crea un entorno virtual en el proyecto:
-```bash
-py -m venv venv
-```
-6. Activa el entorno virtual que acabas de crear:
-```bash
-.\venv\Scripts\activate
-```
-7. Instala las librerías necesarias utilizando el archivo `requirements.txt`:
-```bash
-py -m pip install -r requirements.txt
-```
-## Ejecución de la aplicación y microservicios
+Si deseas explorar alguno de los conjuntos de experimentación, puedes dirigirte a la carpeta correspondiente:
 
-7. Ejecutar la aplicación principal
+- Para ver los experimentos de **Disponibilidad**, ve a la carpeta [`/disponibilidad`](./disponibilidad).
+- Para ver los experimentos de **Seguridad**, ve a la carpeta [`/seguridad`](./seguridad).
 
-7.1 Ve a la carpeta de la aplicación principal:
-```bash
-cd ExperimentoDisponibilidad/flaskr/
-```
-7.2 Ejecuta la aplicación Flask en el puerto 5000:
-```bash
-flask run -p 5000
-```
-8. Ejecutar el microservicio de generación de reportes
+Cada carpeta contiene su propio conjunto de archivos y documentación adicionales que explican los experimentos realizados en cada área.
 
-8.1 En una nueva terminal, ve a la carpeta del microservicio de generación de reportes:
-```bash
-cd ExperimentoDisponibilidad/microservicio_generacion_reportes/
-```
-8.2 Ejecuta este microservicio en el puerto 5001:
-```bash
-flask run -p 5001
-```
-9. Ejecutar el microservicio de monitoreo
+## Requisitos
 
-9.1 Ve a la carpeta del microservicio de monitoreo:
-```bash
-cd ExperimentoDisponibilidad/microservicio_monitoreo/
-```
-9.2 Ejecuta este microservicio en el puerto 5002:
-```bash
-flask run -p 5002
-```
-10. Ejecutar el microservicio de notificación de fallas
+Asegúrate de revisar la documentación en cada carpeta para entender los requisitos específicos para ejecutar los experimentos.
 
-10.1 Ve a la carpeta del microservicio de notificación de fallas:
-```bash
-cd ExperimentoDisponibilidad/microservicio_notificacion_falla/
-```
-10.2 Ejecuta este microservicio en el puerto 5003:
-```bash
-flask run -p 5003
-```
-11. Simular errores en el microservicio de monitoreo
-
-11.1 Ve nuevamente a la carpeta del microservicio de monitoreo:
-```bash
-cd ExperimentoDisponibilidad/microservicio_monitoreo/
-```
-11.2 Ejecuta el script `monitoreo.py`, que contiene las iteraciones para generar errores:
-```bash
-py monitoreo.py
-```
-## Notas adicionales
-- Asegúrate de que todos los puertos (5000, 5001, 5002, 5003) estén disponibles antes de ejecutar las aplicaciones.
-- Si experimentas algún problema, verifica que todas las dependencias se instalaron correctamente y que el entorno virtual esté activado.
